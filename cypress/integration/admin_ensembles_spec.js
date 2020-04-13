@@ -8,17 +8,22 @@ describe ("Test Ensembles tab in Admin", function () {
     it("Ensembles tab is visible, can be clicked and routes to Ensembles page", function () {
       cy.visit(baseUrl)
         .contains(itemTitles.home)
-        .get('i.v-icon.notranslate.mdi.mdi-menu.theme--light') // make selector. this is the menu icon top left.
+        .get('i.v-icon.notranslate.mdi.mdi-menu.theme--light')
         .should('be.visible') 
-        .get('div.v-list-item__title') // make selector? this is the header displaying the item title
+        .get('div.v-list-item__title')
         .should('be.visible')
         .contains(itemTitles.ensembles)
         .click()
         .wait(3000)
+        .get('div.container.pl-5.align-start')
+        .children('div')
+        .children('div')
+        .children('h1')
+        .contains(itemTitles.ensembles)
         .url().should('eq', baseUrl + itemPaths.ensembles)
     })
     it("Table contains data", function () {
-      cy.get('tbody>tr') // make selector? this is getting all table rows in table body
+      cy.get('tbody>tr')
         .get('td.text-left') // make selector. this is the data content of each cell in table body (i.e. does not including the checkboxes in first column)
         .children('a') // make selector. these are the data links in the Name column (note: for articles this would be ID column)
         // .get('td.text-left')
@@ -34,9 +39,13 @@ describe ("Test Ensembles tab in Admin", function () {
         .eq(0).click()
         .wait(3000)
         .url().then(url => {
-          const ensembleId = url.split('/').slice(-1)[0]
-          cy.url().should('eq', baseUrl + itemPaths.ensembles + "/" + ensembleId)
-        }) 
+          const ensembleIdString = url.split('/').slice(-1)[0]
+          const ensembleIdInteger = parseInt(ensembleIdString)
+          cy.location().should((loc) => {
+            expect(loc.origin).to.eq(baseUrl)
+            expect(loc.pathname).to.eq(itemPaths.ensembles + "/" + ensembleIdInteger)
+        })
+      }) 
     })
     it("Profile page contains data", function () {
       cy.get('div.v-content__wrap') // make selector? this is the content wrapper
@@ -56,10 +65,14 @@ describe ("Test Ensembles tab in Admin", function () {
       .click()
       .wait(3000)
       .url().then(url => {
-        const ensembleId = url.split('/').slice(-2)[0]
-        cy.url().should('eq', baseUrl + itemPaths.ensembles + "/" + ensembleId + "/edit")
+        const ensembleIdString = url.split('/').slice(-2)[0]
+        const ensembleIdInteger = parseInt(ensembleIdString)
+        cy.location().should((loc) => {
+          expect(loc.origin).to.eq(baseUrl)
+          expect(loc.pathname).to.eq(itemPaths.ensembles + "/" + ensembleIdInteger + "/edit") 
       })
-    })
+    }) 
+  })
     it("Edit name, click Save button and confirm that it returns to profile page and edit has rendered", function () {
       cy.get('div.v-text-field__slot').children('input').first() // make selector? this gets the first text input - the Name field in this instance
       .clear()
@@ -72,8 +85,12 @@ describe ("Test Ensembles tab in Admin", function () {
       .get('div.pl-0.pr-10.col-lg-10.col-xl-10.col') // make selector. this is the content wrapper
       .children('h1').contains(textFieldEdit) // this is the item header - the ensemble name in this instance
       .url().then(url => {
-        const ensembleId = url.split('/').slice(-2)[0]
-        cy.url().should('eq', baseUrl + itemPaths.ensembles + "/" + ensembleId + "/")
+        const ensembleIdString = url.split('/').slice(-2)[0]
+        const ensembleIdInteger = parseInt(ensembleIdString)
+        cy.location().should((loc) => {
+          expect(loc.origin).to.eq(baseUrl)
+          expect(loc.pathname).to.eq(itemPaths.ensembles + "/" + ensembleIdInteger + "/")
       })
-    })
+    }) 
   })
+})
