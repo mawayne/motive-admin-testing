@@ -1,5 +1,5 @@
 const baseUrl = 'https://dev.admin.motive.fm'
-const itemPaths = {ensembles: '/ensembles', series: '/series', projects: '/projects', playlists: '/playlists', audio: '/audio', video: '/video', images: '/images', articles: '/articles', bundles: '/bundles', users: '/users', roles: '/roles'}
+const pagePaths = {ensembles: '/ensembles', series: '/series', projects: '/projects', playlists: '/playlists', audio: '/audio', video: '/video', images: '/images', articles: '/articles', bundles: '/bundles', users: '/users', roles: '/roles', edit: "/edit"}
 const itemTitles = {home: 'Dashboard', ensembles: 'Ensembles', series: 'Series', projects: 'Projects', playlists: 'Playlists', audio: 'Audio', video: 'Video', images: 'Images', articles: 'Articles', bundles: 'Bundles', users: 'Users', roles: 'Roles'}
 const textFieldEdit = 'Test'
 
@@ -20,7 +20,7 @@ describe ("Test Ensembles tab in Admin", function () {
         .children('div')
         .children('h1')
         .contains(itemTitles.ensembles)
-        .url().should('eq', baseUrl + itemPaths.ensembles)
+        .url().should('eq', baseUrl + pagePaths.ensembles)
     })
     it("Table contains data", function () {
       cy.get('tbody>tr')
@@ -43,7 +43,7 @@ describe ("Test Ensembles tab in Admin", function () {
           const ensembleIdInteger = parseInt(ensembleIdString)
           cy.location().should((loc) => {
             expect(loc.origin).to.eq(baseUrl)
-            expect(loc.pathname).to.eq(itemPaths.ensembles + "/" + ensembleIdInteger)
+            expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger)
         })
       }) 
     })
@@ -69,7 +69,7 @@ describe ("Test Ensembles tab in Admin", function () {
         const ensembleIdInteger = parseInt(ensembleIdString)
         cy.location().should((loc) => {
           expect(loc.origin).to.eq(baseUrl)
-          expect(loc.pathname).to.eq(itemPaths.ensembles + "/" + ensembleIdInteger + "/edit") 
+          expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + pagePaths.edit) 
       })
     }) 
   })
@@ -89,7 +89,7 @@ describe ("Test Ensembles tab in Admin", function () {
         const ensembleIdInteger = parseInt(ensembleIdString)
         cy.location().should((loc) => {
           expect(loc.origin).to.eq(baseUrl)
-          expect(loc.pathname).to.eq(itemPaths.ensembles + "/" + ensembleIdInteger + "/")
+          expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + "/")
       })
     }) 
   })
