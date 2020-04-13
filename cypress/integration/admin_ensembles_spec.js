@@ -34,8 +34,9 @@ describe ("Test Ensembles tab in Admin", function () {
         .eq(0).click()
         .wait(3000)
         .url().then(url => {
-          cy.url().should('eq', url)
-        })
+          const ensembleId = url.split('/').slice(-1)[0]
+          cy.url().should('eq', baseUrl + itemPaths.ensembles + "/" + ensembleId)
+        }) 
     })
     it("Profile page contains data", function () {
       cy.get('div.v-content__wrap') // make selector? this is the content wrapper
@@ -51,17 +52,18 @@ describe ("Test Ensembles tab in Admin", function () {
     it("Edit button is visible, can be clicked and routes to edit page", function () {
       cy.get('span.v-btn__content') // make selector - this is the Edit button
       .contains('Edit')
-        .should('be.visible')
-        .click()
-        .wait(3000)
-        .url().then(url => {
-          cy.url().should('eq', url)
-        })
+      .should('be.visible')
+      .click()
+      .wait(3000)
+      .url().then(url => {
+        const ensembleId = url.split('/').slice(-2)[0]
+        cy.url().should('eq', baseUrl + itemPaths.ensembles + "/" + ensembleId + "/edit")
+      })
     })
     it("Edit name, click Save button and confirm that it returns to profile page and edit has rendered", function () {
       cy.get('div.v-text-field__slot').children('input').first() // make selector? this gets the first text input - the Name field in this instance
       .clear()
-      .type(textFieldEdit)
+      .type(textFieldEdit) //put a selector for the form it self (profile form as the class for example). selector could be ".profile-form.name"
       .get('button.float-right.blue.darken-2.white--text.mt-2.v-btn.v-btn--contained.theme--light.v-size--default') // make selector. this is the Save button
       .should('be.visible')
       .contains('Save')
@@ -70,7 +72,8 @@ describe ("Test Ensembles tab in Admin", function () {
       .get('div.pl-0.pr-10.col-lg-10.col-xl-10.col') // make selector. this is the content wrapper
       .children('h1').contains(textFieldEdit) // this is the item header - the ensemble name in this instance
       .url().then(url => {
-        cy.url().should('eq', url)
+        const ensembleId = url.split('/').slice(-2)[0]
+        cy.url().should('eq', baseUrl + itemPaths.ensembles + "/" + ensembleId + "/")
       })
     })
   })
