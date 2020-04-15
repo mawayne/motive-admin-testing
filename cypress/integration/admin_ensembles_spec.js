@@ -3,8 +3,7 @@ const pagePaths = {ensembles: '/ensembles', series: '/series', projects: '/proje
 const itemTitles = {home: 'Dashboard', ensembles: 'Ensembles', series: 'Series', projects: 'Projects', playlists: 'Playlists', audio: 'Audio', video: 'Video', images: 'Images', articles: 'Articles', bundles: 'Bundles', users: 'Users', roles: 'Roles'}
 const textFieldEdit = 'Test'
 
-
-describe ("Navigate to profile page and confirm there is data", function () {
+describe ("Test Ensembles tab in Admin", function () {
     it("Ensembles tab is visible, can be clicked and routes to Ensembles page", function () {
       cy.visit(baseUrl)
         .contains(itemTitles.home)
@@ -35,8 +34,8 @@ describe ("Navigate to profile page and confirm there is data", function () {
         .children('.text-left') 
         .children('a') 
         // .get('td.text-left')
-        // .children('div').children('a') - make selector. these are the data links in subsequent columns
-        .eq(0).click()
+        // .children('div').children('a') 
+        .eq(3).click()
         .wait(3000)
         .url().then(url => {
           const ensembleIdString = url.split('/').slice(-1)[0]
@@ -55,51 +54,46 @@ describe ("Navigate to profile page and confirm there is data", function () {
         .children('div.row')
         .children('div.col').not('div.font-weight-black.col-md-4.col')
         .children().should('be.visible') 
-      })
     })
-describe ("Edit profile, save update, confirm saving returns to profile page and update has rendered", function () {
     it("Edit button is visible, can be clicked and routes to edit page", function () {
-      cy.get('span.v-btn__content').contains('Edit')
-        .should('be.visible')
-        .click()
-        .wait(3000)
-        .url().then(url => {
-          const ensembleIdString = url.split('/').slice(-2)[0]
-          const ensembleIdInteger = parseInt(ensembleIdString)
-          cy.location().should((loc) => {
-            expect(loc.origin).to.eq(baseUrl)
-            expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + pagePaths.edit) 
-          })
+      cy.get('span.v-btn__content') 
+      .contains('Edit')
+      .should('be.visible')
+      .click()
+      .wait(3000)
+      .url().then(url => {
+        const ensembleIdString = url.split('/').slice(-2)[0]
+        const ensembleIdInteger = parseInt(ensembleIdString)
+        cy.location().should((loc) => {
+          expect(loc.origin).to.eq(baseUrl)
+          expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + pagePaths.edit) 
         })
-    it("Edit name, click Save button and confirm that it returns to profile page and edit has rendered", function () {
+      }) 
+    })
+    it("Make an edit, click Save, confirm page returns to profile and the edit has rendered then return original data to profile and confirm it has rendered", function () {
       cy.get('div.v-text-field__slot').children('input').first()
+        .invoke('val').as('originalName')
+        .get('div.v-text-field__slot').children('input').first()
         .clear()
         .type(textFieldEdit) 
         .get('button.float-right.blue.darken-2.white--text.mt-2.v-btn.v-btn--contained.theme--light.v-size--default') 
         .should('be.visible')
         .contains('Save')
         .click()
-        .wait(3000) 
+        .wait(3000)
         .url().then(url => {
-          const ensembleIdString = url.split('/').slice(-2)[0]
-          const ensembleIdInteger = parseInt(ensembleIdString)
-          cy.location().should((loc) => {
+            const ensembleIdString = url.split('/').slice(-2)[0]
+            const ensembleIdInteger = parseInt(ensembleIdString)
+            cy.location().should((loc) => {
             expect(loc.origin).to.eq(baseUrl)
-            expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + "/")
+            expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + "/")
         })
-        .get('div.pl-0.pr-10.col-lg-10.col-xl-10.col')
-        .children('h1').contains(textFieldEdit)
-      })
-    })
-  })
-})
-describe ("Return profile to original state", function () {
-    before(function () {
-      cy.get('div.v-text-field__slot').children('input').first()
-      .invoke('text').as('text')
-    })
-    it("Reverse the changes made in previous edit, save and confirm changes", function () {
-      cy.get('span.v-btn__content').contains('Edit')
+        .get('div.pl-0.pr-10.col-lg-10.col-xl-10.col') 
+        .children('h1').contains(textFieldEdit) 
+        })
+        .get('span.v-btn__content')
+        .should('be.visible')
+        .contains('Edit')
         .click()
         .wait(3000)
         .url().then(url => {
@@ -110,20 +104,24 @@ describe ("Return profile to original state", function () {
             expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + pagePaths.edit) 
         })
         .get('div.v-text-field__slot').children('input').first()
-        .type(this.text)
+        .clear()
+        .type(this.originalName)
         .get('button.float-right.blue.darken-2.white--text.mt-2.v-btn.v-btn--contained.theme--light.v-size--default') 
+        .should('be.visible')
+        .contains('Save')
         .click()
         .wait(3000)
         .url().then(url => {
-          const ensembleIdString = url.split('/').slice(-2)[0]
-          const ensembleIdInteger = parseInt(ensembleIdString)         
-          cy.location().should((loc) => {
+            const ensembleIdString = url.split('/').slice(-2)[0]
+            const ensembleIdInteger = parseInt(ensembleIdString)
+            cy.location().should((loc) => {
             expect(loc.origin).to.eq(baseUrl)
-            expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + "/")
+            expect(loc.pathname).to.eq(pagePaths.ensembles + "/" + ensembleIdInteger + "/")
         })
         .get('div.pl-0.pr-10.col-lg-10.col-xl-10.col')
-        .children('h1').contains(this.text)  
-        }) 
+        .children('h1') 
+        .contains(this.originalName)
+        })       
       })
-    })
+    }) 
   })
