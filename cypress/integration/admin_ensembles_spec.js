@@ -1,6 +1,6 @@
 const baseUrl = 'https://dev.admin.motive.fm'
-const pagePaths = {ensembles: '/ensembles', series: '/series', projects: '/projects', playlists: '/playlists', audio: '/audio', video: '/video', images: '/images', articles: '/articles', bundles: '/bundles', users: '/users', roles: '/roles', edit: "/edit"}
-const itemTitles = {home: 'Dashboard', ensembles: 'Ensembles', series: 'Series', projects: 'Projects', playlists: 'Playlists', audio: 'Audio', video: 'Video', images: 'Images', articles: 'Articles', bundles: 'Bundles', users: 'Users', roles: 'Roles'}
+const pagePaths = {newItem: '/new', ensembles: '/ensembles', series: '/series', projects: '/projects', playlists: '/playlists', audio: '/audio', video: '/video', images: '/images', articles: '/articles', bundles: '/bundles', users: '/users', roles: '/roles', edit: "/edit"}
+const itemTitles = {home: 'Dashboard', newEnsemble: 'New Ensemble', newSeries: 'New Series', newProject: 'New Project', ensembles: 'Ensembles', series: 'Series', projects: 'Projects', playlists: 'Playlists', audio: 'Audio', video: 'Video', images: 'Images', articles: 'Articles', bundles: 'Bundles', users: 'Users', roles: 'Roles'}
 const textFieldEdit = 'Test'
 
 describe ("Test Ensembles tab in Admin", function () {
@@ -14,14 +14,62 @@ describe ("Test Ensembles tab in Admin", function () {
         .contains(itemTitles.ensembles)
         .click()
         .wait(3000)
+        .url().should('eq', baseUrl + pagePaths.ensembles)
         .get('div.container.pl-5.align-start')
         .children('div')
         .children('div')
         .children('h1')
+        .should('be.visible')
         .contains(itemTitles.ensembles)
-        .url().should('eq', baseUrl + pagePaths.ensembles)
+
     })
-    it("Table contains data", function () {
+    it("Add Ensemble button can be clicked, reroutes to New Ensembles page. Edits can canceled (and return to Ensembles page) or be saved (and are rendered).", function () {
+      cy.get('span.v-btn__content')
+        .should('be.visible')
+        .contains('Add Ensemble')
+        .click()
+        .wait(3000)
+        .url().then(url => {
+          const ensembleIdString = url.split('/').slice(-1)[0]
+          const ensembleIdInteger = parseInt(ensembleIdString)
+          cy.location().should((loc) => {
+            expect(loc.origin).to.eq(baseUrl)
+            expect(loc.pathname).to.eq(pagePaths.ensembles + pagePaths.newItem)
+        })
+        .get('div.pl-0.pr-10.col-lg-8.col-xl-6.col')
+        .children('h1')
+        .should('be.visible')
+        .contains('New Ensemble')
+        .get('button.mr-3.v-btn--contained.theme--light.v-size--default')
+        .click()
+        .wait(3000)
+        .url().should('eq', baseUrl + pagePaths.ensembles)
+        .get('div.container.pl-5.align-start')
+        .children('div')
+        .children('div')
+        .children('h1')
+        .should('be.visible')
+        .contains(itemTitles.ensembles)
+        .get('span.v-btn__content')
+        .should('be.visible')
+        .contains('Add Ensemble')
+        .click()
+        .wait(3000)
+        .url().then(url => {
+          const ensembleIdString = url.split('/').slice(-1)[0]
+          const ensembleIdInteger = parseInt(ensembleIdString)
+          cy.location().should((loc) => {
+            expect(loc.origin).to.eq(baseUrl)
+            expect(loc.pathname).to.eq(pagePaths.ensembles + pagePaths.newItem)
+        })
+        .get('div.pl-0.pr-10.col-lg-8.col-xl-6.col')
+        .children('h1')
+        .should('be.visible')
+        .contains('New Ensemble')
+        })
+      })
+    })
+    it("Ensembles table contains data", function () {
       cy.get('tbody>tr')
         .get('td.text-left')
         .children('a')
